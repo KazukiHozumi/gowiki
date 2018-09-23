@@ -55,8 +55,19 @@ func saveHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func renderTemplate(w http.ResponseWriter, tmpl string, p *Page) {
-	t, _ := template.ParseFiles(tmpl + ".html")
-	t.Execute(w, p)
+	err := templates[tmpl].Execute(w, p)
+	if err != nil {
+		panic(err)
+	}
+}
+
+var templates = make(map[string]*template.Template)
+
+func init() {
+	for _, tmpl := range []string{"edit", "view"} {
+		t := template.Must(template.ParseFiles(tmpl + ".html"))
+		templates[tmpl] = t
+	}
 }
 
 func main() {
